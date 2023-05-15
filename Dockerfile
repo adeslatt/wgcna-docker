@@ -7,7 +7,7 @@ ARG ENV_NAME="wgcna"
 # Since our base image is an R docker base we will use cran for instal
 
 RUN apt-get update && \ 
-    Rscript -e "install.packages('WGCNA')" && \
+    R -e "install.packages(c('BiocManager'), repos='https://cloud.r-project.org/');BiocManager::install('WGCNA')" && \
     apt-get clean -y
 
 
