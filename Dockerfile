@@ -1,13 +1,15 @@
 # Full contents of Dockerfile
-
-FROM continuumio/miniconda3
-LABEL description="Base docker image with conda and util libraries"
+FROM rocker/tidyverse
+LABEL description="Base docker image with tidyverse and hence R and util libraries"
 ARG ENV_NAME="wgcna"
 
-# Install procps so that Nextflow can poll CPU usage
+# Install wgcna
+# Since our base image is an R docker base we will use cran for instal
+
 RUN apt-get update && \ 
-    apt-get install -y procps && \
+    Rscript -e "install.packages('WGCNA')" && \
     apt-get clean -y
+
 
 #
 # Jupytext can be used to convert this to a a notebook

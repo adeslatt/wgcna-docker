@@ -1,5 +1,6 @@
-install.packages("BiocManager")
-BiocManager::install("WGCNA")
+# no longer need to install here because it was installed in our base image
+#install.packages("BiocManager")
+library(WGCNA)
 
 # read in the normalized expression
 # expecting the output from DESeq2 where data are normalized
