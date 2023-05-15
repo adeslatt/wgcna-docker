@@ -1,0 +1,21 @@
+# Full contents of Dockerfile
+
+FROM continuumio/miniconda3
+LABEL description="Base docker image with conda and util libraries"
+ARG ENV_NAME="wgcna"
+
+# Install procps so that Nextflow can poll CPU usage
+RUN apt-get update && \ 
+    apt-get install -y procps && \
+    apt-get clean -y
+
+#
+# Jupytext can be used to convert this to a a notebook
+# as a script it can be used in a workflow
+#
+# to run as a script you can use Rscript wgcna.Rscript
+ADD ./wgcna.R /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/wgcna.R
+
+
