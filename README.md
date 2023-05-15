@@ -1,3 +1,4 @@
+[![Docker Image CI](https://github.com/NIH-NICHD/wgcna-docker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/NIH-NICHD/wgcna-docker/actions/workflows/docker-image.yml)
 Build a Container for the Rscript wgcna.R
 
 Steps to build this docker container.
