@@ -1,13 +1,40 @@
 # no longer need to install here because it was installed in our base image
 #install.packages("BiocManager")
+#install.packages(c('BiocManager'), repos='https://cloud.r-project.org/');BiocManager::install('WGCNA')
 library(WGCNA)
+
+#remove.packages("tidyverse") 
+install.packages("tidyverse")
+
+
+library(tidyverse)
 
 # read in the normalized expression
 # expecting the output from DESeq2 where data are normalized
-expr_normalized <- readr::read_delim("normalized.txt",  
-                          delim = "\t")
+data <- readr::read_delim("/sbgenomics/project-files/test_data_GenePhenotypeFile.csv",  
+                          delim = ",")
 
-input_mat = t(expr_normalized)
+data[1:9,1:10]
+
+de_input = as.matrix(data[,-1])
+row.names(de_input) = data$GeneId
+de_input[1:9,1:9]
+
+meta_df <- data.frame( Sample = names(data[-1])) %>%
+  mutate(
+    Type = gsub("-.*","", Sample) %>% gsub("[.].*","", .)
+  )
+meta_df
+
+#the deseq normlization step is executed outside of here
+# input_mat <- t(expr_normalized) 
+input_mat<- t(de_input)
+input_mat[1:9,1:9]
+
+names(data)[1] = "GeneId"
+names(data)           # Look at the column names
+
+input_mat[1:9,1:9]
 
 allowWGCNAThreads()          # allow multi-threading (optional)
 #> Allowing multi-threading with up to 4 threads.
@@ -24,6 +51,13 @@ sft = pickSoftThreshold(
   )
 
 col_sel = names(data)[-1]     # Get all but first column name
+col_sel
+
+# Optional step ---  order the groups in the plot.
+# mdata$group = factor(mdata$group,
+#                     levels = c("B", "B_L1", ....))  #<= fill the rest of this in
+
+
 mdata <- data %>%
   tidyr::pivot_longer(
     .,                        # The dot is the the input data, magrittr tutorial
@@ -32,10 +66,6 @@ mdata <- data %>%
   mutate(
     group = gsub("-.*","", name) %>% gsub("[.].*","", .)   # Get the shorter treatment names
   )
-
-# Optional step ---  order the groups in the plot.
-# mdata$group = factor(mdata$group,
-#                     levels = c("B", "B_L1", ....))  #<= fill the rest of this in
 
 
 # ==== Plot groups (Sample Groups vs RNA Seq Counts) to identify outliers
@@ -51,7 +81,7 @@ mdata <- data %>%
     labs(x = "Treatment Groups", y = "RNA Seq Counts") +
     facet_grid(cols = vars(group), drop = TRUE, scales = "free_x")      # Facet by hour
 )
-  
+
 par(mfrow = c(1,2));
 cex1 = 0.9;
 
@@ -83,6 +113,11 @@ temp_cor <- cor
 cor <- WGCNA::cor         
 # Force it to use WGCNA cor function (fix a namespace conflict issue)
 # <= input here
+
+typeof(input_mat)
+
+
+input_mat
 
 netwk <- blockwiseModules(input_mat,               
     # == Adjacency Function ==
@@ -169,3 +204,7 @@ mME %>% ggplot(., aes(x=treatment, y=name, fill=value)) +
     limit = c(-1,1)) +
   theme(axis.text.x = element_text(angle=90)) +
   labs(title = "Module-trait Relationships", y = "Modules", fill="corr")
+
+
+
+
