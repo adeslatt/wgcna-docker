@@ -2,19 +2,20 @@
 #install.packages("BiocManager")
 #install.packages(c('BiocManager'), repos='https://cloud.r-project.org/');BiocManager::install('WGCNA')
 library(WGCNA)
-
-#remove.packages("tidyverse") 
+ 
 install.packages("tidyverse")
-
-
 library(tidyverse)
 
 # read in the normalized expression
 # expecting the output from DESeq2 where data are normalized
-data <- readr::read_delim("/sbgenomics/project-files/test_data_GenePhenotypeFile.csv",  
-                          delim = ",")
+#data <- readr::read_delim("/sbgenomics/project-files/test_data_GenePhenotypeFile.csv",  
+#                          delim = ",")
+#take input from gene-median-splitter matrices - 2 one for HighMyc and one for LowMyc
 
-data[1:9,1:10]
+matrix <- commandArgs(trailingOnly=TRUE)
+data <- read.csv(matrix, sep="\t")
+
+data[1:9,1:9]
 
 de_input = as.matrix(data[,-1])
 row.names(de_input) = data$GeneId
